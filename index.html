@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 면접 프롬프트 생성 앱</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --line:#dbe4f0;
+      --text:#1f2937;
+      --sub:#667085;
+      --brand:#1f4b99;
+      --brand2:#3b82f6;
+      --soft:#eaf2ff;
+      --dark:#0f172a;
+      --ok:#16a34a;
+      --warn:#dc2626;
+      --shadow:0 14px 40px rgba(15, 23, 42, 0.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Pretendard","Noto Sans KR",Arial,sans-serif;
+      color:var(--text);
+      background:linear-gradient(180deg,#eef4ff 0%, #f7f9fc 220px, #f4f7fb 100%);
+    }
+    .app{
+      max-width:1280px;
+      margin:0 auto;
+      padding:28px 18px 50px;
+    }
+    .hero{
+      background:linear-gradient(135deg,#163a6b 0%, #1f4b99 55%, #3b82f6 100%);
+      color:#fff;
+      border-radius:24px;
+      padding:28px 24px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+    .hero h1{
+      margin:0 0 8px;
+      font-size:32px;
+      line-height:1.2;
+    }
+    .hero p{
+      margin:0;
+      color:rgba(255,255,255,0.9);
+      font-size:15px;
+    }
+    .global-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+    .topbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:18px 0 22px;
+    }
+    .tab-btn{
+      border:none;
+      border-radius:999px;
+      padding:12px 18px;
+      background:#dce8ff;
+      color:#14345f;
+      font-weight:800;
+      cursor:pointer;
+      transition:.2s ease;
+      box-shadow:0 4px 14px rgba(31,75,153,0.08);
+    }
+    .tab-btn.active{
+      background:#163a6b;
+      color:#fff;
+      transform:translateY(-1px);
+    }
+    .screen{display:none}
+    .screen.active{display:block}
+    .grid{
+      display:grid;
+      grid-template-columns:1.02fr 1fr;
+      gap:18px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card-head{
+      padding:18px 20px;
+      border-bottom:1px solid #e7edf5;
+      background:linear-gradient(180deg,#fbfdff 0%, #f7faff 100%);
+    }
+    .card-head h2{
+      margin:0 0 6px;
+      font-size:22px;
+      color:#163a6b;
+    }
+    .card-head p{
+      margin:0;
+      color:var(--sub);
+      font-size:14px;
+    }
+    .card-body{
+      padding:18px 20px 20px;
+    }
+    .section-title{
+      margin:0 0 12px;
+      font-size:15px;
+      color:#234c84;
+      font-weight:800;
+    }
+    .fields{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+    .field.full{grid-column:1/-1}
+    label{
+      display:block;
+      margin:0 0 6px;
+      font-size:14px;
+      font-weight:800;
+    }
+    .tip{
+      display:block;
+      font-size:12px;
+      color:var(--sub);
+      margin-top:4px;
+      line-height:1.4;
+    }
+    input, textarea{
+      width:100%;
+      border:1px solid #ccd8e7;
+      border-radius:12px;
+      padding:12px 13px;
+      font-size:14px;
+      color:var(--text);
+      background:#fff;
+      outline:none;
+      transition:border-color .15s ease, box-shadow .15s ease;
+    }
+    input:focus, textarea:focus{
+      border-color:#60a5fa;
+      box-shadow:0 0 0 4px rgba(96,165,250,0.15);
+    }
+    textarea{
+      min-height:92px;
+      resize:vertical;
+      line-height:1.55;
+    }
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:18px;
+    }
+    button{
+      border:none;
+      border-radius:12px;
+      padding:12px 16px;
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.18s ease;
+    }
+    button:hover{transform:translateY(-1px)}
+    .primary{background:#163a6b;color:#fff}
+    .secondary{background:#edf4ff;color:#163a6b}
+    .ghost{background:#f8fafc;color:#334155;border:1px solid #d8e1ec}
+    .danger{background:#fff1f2;color:#b42318;border:1px solid #fecdd3}
+    .status{
+      margin-top:12px;
+      font-size:13px;
+      color:var(--ok);
+      min-height:20px;
+    }
+    .output-wrap{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      height:100%;
+    }
+    .meta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      padding:7px 10px;
+      border-radius:999px;
+      background:#eef4ff;
+      color:#234c84;
+      font-size:12px;
+      font-weight:800;
+    }
+    .output{
+      flex:1;
+      min-height:620px;
+      border-radius:16px;
+      background:var(--dark);
+      color:#e5eefc;
+      padding:18px;
+      white-space:pre-wrap;
+      overflow:auto;
+      font-family:Consolas, "Courier New", monospace;
+      font-size:13.6px;
+      line-height:1.58;
+      border:1px solid #0b1220;
+    }
+    .footer-note{
+      margin-top:18px;
+      font-size:13px;
+      color:#667085;
+      line-height:1.6;
+    }
+    .mini{
+      font-size:12px;
+      color:#667085;
+      margin-top:6px;
+    }
+    @media (max-width:1024px){
+      .grid{grid-template-columns:1fr}
+      .output{min-height:420px}
+    }
+    @media (max-width:700px){
+      .fields{grid-template-columns:1fr}
+      .hero h1{font-size:26px}
+      .hero p{font-size:14px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <section class="hero">
+      <h1>2026 면접 프롬프트 생성 앱</h1>
+      <p>대기업·사기업, 상황면접 STAR, 공공기관 NCS 프롬프트를 학생이 직접 입력하고 생성·복사·다운로드할 수 있는 단일 HTML 앱입니다.</p>
+
+      <div class="global-actions">
+        <button class="secondary" onclick="downloadCurrentApp()">이 HTML 앱 다운로드</button>
+        <button class="ghost" onclick="clearAllSavedData()">저장된 입력 전체 삭제</button>
+      </div>
+    </section>
+
+    <div class="topbar">
+      <button class="tab-btn active" data-screen="screen1">1. 대기업·사기업</button>
+      <button class="tab-btn" data-screen="screen2">2. 상황면접 STAR</button>
+      <button class="tab-btn" data-screen="screen3">3. 공공기관 NCS</button>
+    </div>
+
+    <section id="screen1" class="screen active">
+      <div class="grid">
+        <div class="card">
+          <div class="card-head">
+            <h2>대기업·사기업 통합형</h2>
+            <p>직무적합성, 팀핏, 문제해결, 협업, 진정성, AI 활용 역량을 반영한 프롬프트 생성 화면입니다.</p>
+          </div>
+          <div class="card-body">
+            <div class="section-title">지원자 정보 입력</div>
+            <div class="fields">
+              <div class="field">
+                <label for="c1_company">지원 회사/계열사</label>
+                <input id="c1_company" data-save="true" placeholder="예: 삼성전자 DX부문" />
+              </div>
+              <div class="field">
+                <label for="c1_job">지원 직무</label>
+                <input id="c1_job" data-save="true" placeholder="예: 마케팅, 생산관리, SW개발" />
+              </div>
+              <div class="field">
+                <label for="c1_major">전공/학년</label>
+                <input id="c1_major" data-save="true" placeholder="예: 경영학과 4학년" />
+              </div>
+              <div class="field">
+                <label for="c1_weak">약하다고 느끼는 질문 유형</label>
+                <input id="c1_weak" data-save="true" placeholder="예: 실패 경험, 지원동기, 압박질문" />
+              </div>
+              <div class="field full">
+                <label for="c1_exp3">자기소개서 핵심 경험 3가지</label>
+                <textarea id="c1_exp3" data-save="true" placeholder="예: 공모전 기획 / 팀 프로젝트 갈등 조정 / 인턴 데이터 분석"></textarea>
+                <span class="tip">짧은 키워드보다 사건 중심으로 쓰면 프롬프트 품질이 좋아집니다.</span>
+              </div>
+              <div class="field full">
+                <label for="c1_best">가장 자신 있는 경험 1가지</label>
+                <textarea id="c1_best" data-save="true" placeholder="가장 성과가 분명하고 꼬리질문에 대응하기 쉬운 경험을 적으세요."></textarea>
+              </div>
+              <div class="field full">
+                <label for="c1_trend">최근 관심 산업 트렌드 2가지</label>
+                <textarea id="c1_trend" data-save="true" placeholder="예: 생성형 AI 활용 생산성 향상 / 고객경험 데이터 기반 의사결정"></textarea>
+              </div>
+              <div class="field full">
+                <label for="c1_reason">이 회사를 지원한 이유</label>
+                <textarea id="c1_reason" data-save="true" placeholder="회사·직무·내 경험이 연결되도록 적으세요."></textarea>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="primary" onclick="generatePrompt1()">프롬프트 생성</button>
+              <button class="secondary" onclick="fillSample1()">샘플 입력</button>
+              <button class="ghost" onclick="copyText('output1')">복사</button>
+              <button class="ghost" onclick="downloadText('prompt_corporate_2026.txt', getOutputText('output1'))">TXT 다운로드</button>
+              <button class="danger" onclick="resetSection('screen1','output1')">초기화</button>
+            </div>
+            <div class="status" id="status1"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>생성 결과</h2>
+            <p>복사하거나 TXT 파일로 저장해서 학생이 AI 도구에 바로 붙여넣을 수 있습니다.</p>
+          </div>
+          <div class="card-body output-wrap">
+            <div class="meta">
+              <span class="chip">질문 1개씩 진행</span>
+              <span class="chip">STAR 피드백 포함</span>
+              <span class="chip">꼬리질문 검증</span>
+            </div>
+            <div id="output1" class="output"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen2" class="screen">
+      <div class="grid">
+        <div class="card">
+          <div class="card-head">
+            <h2>상황형 행동면접 STAR</h2>
+            <p>갈등, 윤리, 팀워크, 책임감, 문제해결, AI 활용 경험을 기반으로 행동면접 프롬프트를 생성합니다.</p>
+          </div>
+          <div class="card-body">
+            <div class="section-title">행동면접 입력</div>
+            <div class="fields">
+              <div class="field">
+                <label for="c2_major">전공/학년</label>
+                <input id="c2_major" data-save="true" placeholder="예: 행정학과 4학년" />
+              </div>
+              <div class="field">
+                <label for="c2_job">지원 직무</label>
+                <input id="c2_job" data-save="true" placeholder="예: 인사, 총무, 영업관리" />
+              </div>
+              <div class="field full">
+                <label for="c2_conflict">팀 프로젝트 갈등 사례 요약</label>
+                <textarea id="c2_conflict" data-save="true" placeholder="예: 역할 분담 불균형으로 팀원 간 불만이 커지고 일정이 지연된 경험"></textarea>
+              </div>
+              <div class="field full">
+                <label for="c2_dilemma">아르바이트/인턴 딜레마 사례</label>
+                <textarea id="c2_dilemma" data-save="true" placeholder="예: 규정상 어려운 요청을 고객이 강하게 요구한 상황"></textarea>
+              </div>
+              <div class="field full">
+                <label for="c2_problem">문제를 해결했던 경험</label>
+                <textarea id="c2_problem" data-save="true" placeholder="예: 일정 지연 문제를 업무 재배치와 일정표 조정으로 해결"></textarea>
+              </div>
+              <div class="field full">
+                <label for="c2_ai">디지털 도구/AI 활용 경험</label>
+                <textarea id="c2_ai" data-save="true" placeholder="예: 엑셀 함수 자동화, ChatGPT 초안 작성, 설문 결과 정리"></textarea>
+              </div>
+              <div class="field">
+                <label for="c2_strength">나의 강점</label>
+                <input id="c2_strength" data-save="true" placeholder="예: 책임감, 경청, 실행력" />
+              </div>
+              <div class="field">
+                <label for="c2_weakness">나의 약점</label>
+                <input id="c2_weakness" data-save="true" placeholder="예: 지나친 완벽주의, 발표 긴장" />
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="primary" onclick="generatePrompt2()">프롬프트 생성</button>
+              <button class="secondary" onclick="fillSample2()">샘플 입력</button>
+              <button class="ghost" onclick="copyText('output2')">복사</button>
+              <button class="ghost" onclick="downloadText('prompt_star_2026.txt', getOutputText('output2'))">TXT 다운로드</button>
+              <button class="danger" onclick="resetSection('screen2','output2')">초기화</button>
+            </div>
+            <div class="status" id="status2"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>생성 결과</h2>
+            <p>상황형 질문과 냉정한 피드백 중심의 프롬프트가 생성됩니다.</p>
+          </div>
+          <div class="card-body output-wrap">
+            <div class="meta">
+              <span class="chip">갈등·윤리 질문</span>
+              <span class="chip">1분 답변 압축</span>
+              <span class="chip">진정성 검증</span>
+            </div>
+            <div id="output2" class="output"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen3" class="screen">
+      <div class="grid">
+        <div class="card">
+          <div class="card-head">
+            <h2>공공기관·공기업 NCS형</h2>
+            <p>공정성, 공익성, 직업윤리, 의사소통, 민원 대응, 블라인드 채용 유의사항을 반영한 프롬프트 생성 화면입니다.</p>
+          </div>
+          <div class="card-body">
+            <div class="section-title">공공기관 면접 입력</div>
+            <div class="fields">
+              <div class="field">
+                <label for="c3_major">전공/학년</label>
+                <input id="c3_major" data-save="true" placeholder="예: 사회복지학과 4학년" />
+              </div>
+              <div class="field">
+                <label for="c3_org">지원 기관 및 직무</label>
+                <input id="c3_org" data-save="true" placeholder="예: 국민건강보험공단 행정직" />
+              </div>
+              <div class="field full">
+                <label for="c3_public">지원 기관의 공공적 역할 한 줄 요약</label>
+                <textarea id="c3_public" data-save="true" placeholder="예: 국민의 건강보장과 보험서비스를 안정적으로 제공"></textarea>
+              </div>
+              <div class="field full">
+                <label for="c3_conflict">팀 프로젝트/동아리 갈등 사례</label>
+                <textarea id="c3_conflict" data-save="true" placeholder="예: 의견 차이로 일정이 늦어졌고 역할 조정이 필요했던 경험"></textarea>
+              </div>
+              <div class="field full">
+                <label for="c3_civil">딜레마 또는 민원 사례</label>
+                <textarea id="c3_civil" data-save="true" placeholder="예: 규정과 고객 편의가 충돌했던 경험"></textarea>
+              </div>
+              <div class="field full">
+                <label for="c3_rule">규정과 현장 상황 사이에서 고민했던 경험</label>
+                <textarea id="c3_rule" data-save="true" placeholder="당시 판단 기준과 실제 행동을 함께 적으세요."></textarea>
+              </div>
+              <div class="field full">
+                <label for="c3_comp">지원 직무 관련 역량 경험</label>
+                <textarea id="c3_comp" data-save="true" placeholder="예: 문서작성, 민원응대, 데이터 정리, 협업 경험"></textarea>
+              </div>
+              <div class="field full">
+                <label for="c3_reason">공공기관 지원 동기</label>
+                <textarea id="c3_reason" data-save="true" placeholder="공익성과 직무 적합성을 연결해서 적으세요."></textarea>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="primary" onclick="generatePrompt3()">프롬프트 생성</button>
+              <button class="secondary" onclick="fillSample3()">샘플 입력</button>
+              <button class="ghost" onclick="copyText('output3')">복사</button>
+              <button class="ghost" onclick="downloadText('prompt_public_ncs_2026.txt', getOutputText('output3'))">TXT 다운로드</button>
+              <button class="danger" onclick="resetSection('screen3','output3')">초기화</button>
+            </div>
+            <div class="status" id="status3"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>생성 결과</h2>
+            <p>공공성, 직업윤리, 문제해결, 민원 대응 균형을 점검하는 프롬프트가 생성됩니다.</p>
+          </div>
+          <div class="card-body output-wrap">
+            <div class="meta">
+              <span class="chip">블라인드 채용 주의</span>
+              <span class="chip">NCS 평가항목</span>
+              <span class="chip">민원·규정 균형</span>
+            </div>
+            <div id="output3" class="output"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      이 앱은 브라우저에 입력값을 저장하므로 새로고침 후에도 내용이 유지될 수 있습니다.
+      <div class="mini">권장 사용법: ① 입력 → ② 프롬프트 생성 → ③ 복사 또는 TXT 다운로드 → ④ AI 도구에 붙여넣기 → ⑤ 상단 버튼으로 HTML 앱 자체 저장</div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "careerins_interview_prompt_app_v2026";
+
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const screens = document.querySelectorAll(".screen");
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabButtons.forEach(b => b.classList.remove("active"));
+        screens.forEach(s => s.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.screen).classList.add("active");
+      });
+    });
+
+    function getAllSavableInputs() {
+      return [...document.querySelectorAll("[data-save='true']")];
+    }
+
+    function saveState() {
+      const data = {};
+      getAllSavableInputs().forEach(el => {
+        data[el.id] = el.value;
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const data = JSON.parse(raw);
+        getAllSavableInputs().forEach(el => {
+          if (data[el.id] !== undefined) el.value = data[el.id];
+        });
+      } catch (e) {}
+    }
+
+    function bindAutosave() {
+      getAllSavableInputs().forEach(el => {
+        el.addEventListener("input", saveState);
+      });
+    }
+
+    function setStatus(id, msg, ok = true) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = msg;
+      el.style.color = ok ? "#16a34a" : "#dc2626";
+      setTimeout(() => {
+        if (el.textContent === msg) el.textContent = "";
+      }, 2500);
+    }
+
+    function getOutputText(id) {
+      return document.getElementById(id).textContent.trim();
+    }
+
+    async function copyText(id) {
+      const text = getOutputText(id);
+      if (!text) {
+        alert("먼저 프롬프트를 생성하세요.");
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(text);
+        alert("프롬프트가 복사되었습니다.");
+      } catch (e) {
+        alert("복사에 실패했습니다. 직접 선택해서 복사해 주세요.");
+      }
+    }
+
+    function downloadText(filename, text) {
+      if (!text) {
+        alert("먼저 프롬프트를 생성하세요.");
+        return;
+      }
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadCurrentApp() {
+      const html = document.documentElement.outerHTML;
+      const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "2026_면접프롬프트생성앱.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function clearAllSavedData() {
+      const ok = confirm("브라우저에 저장된 입력값을 모두 삭제할까요?");
+      if (!ok) return;
+      localStorage.removeItem(STORAGE_KEY);
+      document.querySelectorAll("[data-save='true']").forEach(el => el.value = "");
+      document.getElementById("output1").textContent = "";
+      document.getElementById("output2").textContent = "";
+      document.getElementById("output3").textContent = "";
+      alert("저장된 입력값이 삭제되었습니다.");
+    }
+
+    function clearSectionFields(sectionId) {
+      const section = document.getElementById(sectionId);
+      section.querySelectorAll("[data-save='true']").forEach(el => el.value = "");
+      saveState();
+    }
+
+    function resetSection(sectionId, outputId) {
+      clearSectionFields(sectionId);
+      document.getElementById(outputId).textContent = "";
+      const statusId = outputId === "output1" ? "status1" : outputId === "output2" ? "status2" : "status3";
+      setStatus(statusId, "입력값과 생성 결과를 초기화했습니다.");
+    }
+
+    function fillSample1() {
+      document.getElementById("c1_company").value = "현대자동차 국내생산사업부";
+      document.getElementById("c1_job").value = "생산관리";
+      document.getElementById("c1_major").value = "산업공학과 4학년";
+      document.getElementById("c1_exp3").value = "캡스톤디자인에서 생산 공정 개선안 제안, 팀 프로젝트 갈등 조정 경험, 물류센터 아르바이트에서 작업 동선 개선";
+      document.getElementById("c1_best").value = "캡스톤디자인에서 공정 병목 원인을 분석하고 역할을 재조정해 발표 완성도를 높인 경험";
+      document.getElementById("c1_trend").value = "스마트팩토리와 데이터 기반 생산성 향상, AI 활용 제조 현장 효율화";
+      document.getElementById("c1_reason").value = "현대자동차의 제조 혁신과 스마트 생산 시스템에 관심이 많고, 산업공학 전공을 현장 개선 업무와 연결하고 싶기 때문";
+      document.getElementById("c1_weak").value = "실패 경험 질문";
+      saveState();
+      setStatus("status1", "샘플 입력이 적용되었습니다.");
+    }
+
+    function fillSample2() {
+      document.getElementById("c2_major").value = "경영학과 4학년";
+      document.getElementById("c2_job").value = "인사";
+      document.getElementById("c2_conflict").value = "팀 프로젝트에서 일부 팀원이 자료조사에 참여하지 않아 역할 불균형이 생겼고 일정이 지연된 경험";
+      document.getElementById("c2_dilemma").value = "카페 아르바이트 중 마감 시간이 지난 뒤 지인의 주문을 예외적으로 받아달라는 요청을 받은 경험";
+      document.getElementById("c2_problem").value = "학회 행사 준비 중 참여율이 낮아 홍보 방식을 바꾸고 역할을 재배치해 참여율을 높인 경험";
+      document.getElementById("c2_ai").value = "설문 결과 정리에 엑셀 함수와 AI 요약 도구를 활용해 보고서 초안 작성 시간을 줄인 경험";
+      document.getElementById("c2_strength").value = "경청과 조정 능력";
+      document.getElementById("c2_weakness").value = "초기 판단이 신중해 의사결정이 느릴 때가 있음";
+      saveState();
+      setStatus("status2", "샘플 입력이 적용되었습니다.");
+    }
+
+    function fillSample3() {
+      document.getElementById("c3_major").value = "행정학과 4학년";
+      document.getElementById("c3_org").value = "국민건강보험공단 행정직";
+      document.getElementById("c3_public").value = "국민의 건강보장과 안정적인 보험 서비스를 제공하는 기관";
+      document.getElementById("c3_conflict").value = "팀 과제에서 발표 방식에 대한 의견 차이로 준비가 지연되었으나 역할 재조정을 통해 해결한 경험";
+      document.getElementById("c3_civil").value = "행정봉사활동 중 규정상 즉시 처리가 어려운 요청을 민원인이 강하게 요구한 경험";
+      document.getElementById("c3_rule").value = "원칙을 지키되 상대가 이해할 수 있도록 근거를 설명하고 가능한 대안을 함께 안내했던 경험";
+      document.getElementById("c3_comp").value = "문서 작성, 민원 응대 보조, 데이터 정리, 팀 협업 경험";
+      document.getElementById("c3_reason").value = "공공서비스의 신뢰성과 공정성을 높이는 일에 기여하고 싶고, 행정학 전공을 현장 실무와 연결하고 싶기 때문";
+      saveState();
+      setStatus("status3", "샘플 입력이 적용되었습니다.");
+    }
+
+    function generatePrompt1() {
+      const company = v("c1_company");
+      const job = v("c1_job");
+      const major = v("c1_major");
+      const exp3 = v("c1_exp3");
+      const best = v("c1_best");
+      const trend = v("c1_trend");
+      const reason = v("c1_reason");
+      const weak = v("c1_weak");
+
+      const prompt = `[2026 실전형 AI 면접 연습 프롬프트 - 대기업/사기업용]
+
+너는 2026년 대한민국 대기업(삼성, LG, 현대자동차, SK, CJ, 네이버, 카카오 등)의 실제 면접관 역할을 해줘.
+최근 대한민국 채용 트렌드를 반영해서, 단순 암기형 답변보다 직무 적합성, 조직적합성(팀핏), 문제해결력, 협업능력, 책임감, 진정성을 중심으로 평가해줘.
+
+나는 신입 지원자야.
+아래 지원자 정보를 바탕으로 실제 면접처럼 진행해줘.
+
+[면접 진행 방식]
+1) 자기소개 질문부터 시작해줘.
+2) 이후 경험 질문 → 직무 질문 → 상황 질문 → 꼬리질문 순서로 진행해줘.
+3) 한 번에 질문 하나씩만 하고, 내 답변을 기다려줘.
+4) 내가 답변하면 아래 기준으로 피드백해줘.
+- STAR 구조 적용 여부
+- 답변의 구체성(숫자, 행동, 결과 포함 여부)
+- 직무 연관성
+- 최근 산업/회사 트렌드 반영 여부
+- 조직적합성(협업, 책임감, 커뮤니케이션)
+- AI가 쓴 듯한 추상적 표현 여부(있다면 자연스럽게 수정 방향 제시)
+
+[피드백 방식]
+- 5점 만점으로 항목별 점수를 줘.
+- 강점 2가지, 개선점 2가지로 나눠서 말해줘.
+- 내 답변을 더 합격자답게 바꾸는 모범 답변 방향을 3줄로 제시해줘.
+- 필요하면 더 나은 표현 예시도 짧게 보여줘.
+- 답변이 모호하면 바로 꼬리질문으로 깊이 있게 검증해줘.
+
+[질문 출제 원칙]
+- 실제 2026년 국내 대기업 면접처럼 질문해줘.
+- 최근 기업들이 중요하게 보는 요소인 팀워크, 책임감, 진정성, AI 활용 역량, 문제해결력을 반영해줘.
+- 산업/직무에 따라 최신 이슈를 반영한 질문도 포함해줘.
+
+[지원자 정보]
+- 지원 회사/계열사: ${company}
+- 지원 직무: ${job}
+- 전공/학년: ${major}
+- 자기소개서 핵심 경험 3가지: ${exp3}
+- 가장 자신 있는 경험 1가지: ${best}
+- 최근 관심 산업 트렌드 2가지: ${trend}
+- 이 회사를 지원한 이유: ${reason}
+- 내가 약하다고 느끼는 질문 유형: ${weak}
+
+[중요 규칙]
+- 내 답변이 끝날 때마다 바로 최종평가하지 말고, 실제 면접처럼 꼬리질문도 해줘.
+- 내 답변이 추상적이면 “구체적인 행동”, “당시 판단 기준”, “결과 수치”, “배운 점”을 다시 물어줘.
+- 면접이 끝나면 전체 총평과 함께
+1) 자주 쓰면 안 되는 표현
+2) 면접에서 더 설득력 있는 표현
+3) 예상 추가 질문 5개
+를 정리해줘.
+
+첫 번째 질문부터 시작해줘.`;
+
+      out("output1", prompt);
+      setStatus("status1", "프롬프트가 생성되었습니다.");
+    }
+
+    function generatePrompt2() {
+      const major = v("c2_major");
+      const job = v("c2_job");
+      const conflict = v("c2_conflict");
+      const dilemma = v("c2_dilemma");
+      const problem = v("c2_problem");
+      const ai = v("c2_ai");
+      const strength = v("c2_strength");
+      const weakness = v("c2_weakness");
+
+      const prompt = `[2026 상황형 행동면접 프롬프트 - STAR 집중형]
+
+너는 2026년 대한민국 주요 기업의 행동면접관이야.
+나는 신입 지원자이고, 실제 상황형(STAR) 행동면접을 연습하고 싶어.
+
+내가 입력한 경험을 바탕으로 아래 주제에서 질문을 출제해줘.
+- 협업 중 갈등
+- 윤리적 딜레마
+- 팀워크/조직 적응
+- 책임감
+- 문제해결
+- AI 또는 디지털 도구 활용 경험
+
+[진행 규칙]
+1) 질문은 한 번에 하나씩만 해줘.
+2) 내가 답변하면 바로 아래 형식으로 평가해줘.
+- STAR 구조 점검
+- 갈등 해결력
+- 윤리 판단
+- 팀워크
+- 책임감
+- 문제해결력
+- 답변 진정성/구체성
+3) 각 항목은 5점 만점으로 채점해줘.
+4) “면접관이 추가로 궁금해할 꼬리질문” 2개를 제시해줘.
+5) 합격자 수준의 답변 방향을 키워드 중심으로 짧게 정리해줘.
+6) 필요하면 내 답변을 1분 버전으로 다시 압축해줘.
+
+[지원자 정보]
+- 전공/학년: ${major}
+- 지원 직무: ${job}
+- 팀 프로젝트 갈등 사례 요약: ${conflict}
+- 아르바이트/인턴 딜레마 사례: ${dilemma}
+- 문제를 해결했던 경험: ${problem}
+- 디지털 도구나 AI를 활용해 효율을 높인 경험: ${ai}
+- 나의 강점: ${strength}
+- 나의 약점: ${weakness}
+
+[면접관 역할 설정]
+- 단순히 칭찬만 하지 말고 실제 면접관처럼 냉정하게 평가해줘.
+- 모호한 답변에는 반드시 꼬리질문을 해줘.
+- 답변이 사실처럼 들리지 않으면 왜 그렇게 판단했는지도 알려줘.
+- 학생 수준에서 말할 수 있는 현실적인 표현으로 수정해줘.
+
+첫 질문부터 시작해줘.`;
+
+      out("output2", prompt);
+      setStatus("status2", "프롬프트가 생성되었습니다.");
+    }
+
+    function generatePrompt3() {
+      const major = v("c3_major");
+      const org = v("c3_org");
+      const publicRole = v("c3_public");
+      const conflict = v("c3_conflict");
+      const civil = v("c3_civil");
+      const rule = v("c3_rule");
+      const comp = v("c3_comp");
+      const reason = v("c3_reason");
+
+      const prompt = `[2026 공공기관 NCS 면접 연습 프롬프트]
+
+너는 2026년 대한민국 공공기관(공기업)의 NCS 기반 면접관이야.
+공정성, 공익성, 직업윤리, 의사소통능력, 문제해결능력, 대인관계능력을 중요하게 평가해줘.
+블라인드 채용 원칙에 맞게 출신학교, 지역, 가족관계 등 불필요한 정보는 평가에서 제외하고 직무 역량 중심으로 질문해줘.
+
+나는 신입직 지원자이고, 실제 공공기관 면접처럼 상황형·경험형 면접을 연습하고 싶어.
+
+[진행 방식]
+1) 질문은 한 번에 하나씩만 해줘.
+2) 질문은 아래 영역에서 순서대로 출제해줘.
+- 협업 중 갈등
+- 윤리/규정 딜레마
+- 팀워크/조직 적응
+- 민원 응대 또는 공익성 판단
+- 직무 상황 대처
+3) 내가 답변하면 다음 기준으로 5점 만점 평가와 피드백을 줘.
+- 의사소통능력
+- 직업윤리
+- 대인관계능력
+- 문제해결능력
+- 공공성/책임감
+- STAR 구조 적합성
+4) 피드백 후에는 공공기관 합격자 수준의 모범 답변 방향을 핵심 키워드로 요약해줘.
+5) 내 답변에 블라인드 면접에서 부적절한 표현이 있으면 바로 수정해줘.
+6) 답변이 규정 중심으로만 치우치거나 반대로 민원인 편의만 강조되면, 균형 잡힌 답변 방향을 제시해줘.
+
+[지원 정보]
+- 전공/학년: ${major}
+- 지원 기관 및 직무: ${org}
+- 지원 기관의 공공적 역할 한 줄 요약: ${publicRole}
+- 팀 프로젝트/동아리 갈등 사례: ${conflict}
+- 아르바이트/인턴/봉사활동 중 겪은 딜레마 또는 민원 사례: ${civil}
+- 규정과 현장 상황 사이에서 고민했던 경험: ${rule}
+- 지원 직무 관련 역량 경험: ${comp}
+- 나의 공공기관 지원 동기: ${reason}
+
+[출제 원칙]
+- 실제 2026년 공공기관 면접처럼 공익성과 직업윤리를 반영해 질문해줘.
+- 규정 준수와 국민 편익 사이의 균형을 묻는 질문을 포함해줘.
+- 내가 말한 경험에서 부족한 부분은 꼬리질문으로 보완해줘.
+
+첫 번째 질문부터 시작해줘.`;
+
+      out("output3", prompt);
+      setStatus("status3", "프롬프트가 생성되었습니다.");
+    }
+
+    function v(id){ return document.getElementById(id).value.trim(); }
+    function out(id, text){ document.getElementById(id).textContent = text; }
+
+    loadState();
+    bindAutosave();
+  </script>
+</body>
+</html>
